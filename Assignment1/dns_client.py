@@ -1,5 +1,8 @@
+#!/usr/bin/env python
+
 import time
 import socket
+import argparse
 import packet_constructor
 import packet_deconstructor
 import argparse
@@ -71,12 +74,36 @@ def main():
             if recvB:
                 resp = True
                 sock.close()
-                print("Response received after {} seconds and {} retries.".format(t2 - t1, retries))
+                print("Response received after {} seconds ({} retries)".format(t2 - t1, retries))
                 break
         except socket.timeout:
             print("ERROR: Request timed out.")
 
-    packet_deconstructor.deconstruct_packet(recvB, packet_constructor.get_qname(name))
+    (answer, aa) = packet_deconstructor.deconstruct_packet(recvB, packet_constructor.get_qname(name))
+
+    if aa:
+        auth = 'auth'
+    else:
+        auth = 'nonauth'
+
+    print("*** Answer Section ({} records) ***".format(len(answer)))
+    for entry in answer:
+        if entry[1] == 1:
+            print("IP    {}    {}   {}".format(entry[5], entry[3], auth))
+        elif entry[1] == 2:
+            print("NS    {}    {}   {}".format(entry[5], entry[3], auth))
+        elif entry[1] == 5:
+            print("CNAME    {}    {}    {}".format(entry[5], entry[3], auth))
+        elif entry[1] == 15:
+            pref = entry[5][1][0]
+            alias = ''
+            for i in entry[5][0]:
+                if i != entry[5][0][0]:
+                    alias += '.'
+                    alias += i
+                else:
+                    alias += i
+            print("MX    {}    {}   {}   {}".format(alias, pref, entry[3], auth))
 
 
 if __name__ == "__main__":
