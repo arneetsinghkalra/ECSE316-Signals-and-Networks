@@ -7,8 +7,60 @@ import packet_constructor
 import packet_deconstructor
 import argparse
 
-
 def main():
+    # Store Values
+    args = get_args()
+    timeout = args.timeout
+    max_retries = args.maxretries
+    port = args.port
+    if args.mx:
+        type = 'MX'
+    elif args.ns:
+        type = 'NS'
+    else:
+        type = 'A'
+    server = args.server[1:]
+    name = args.name.strip()
+
+    print("dns_client sending request for {}.".format(name))
+    print("Server: {}".format(server))
+    print("Request type: {}".format(type))
+
+    # Create socket connection then try to send a packet and receive the reply
+    for retries in range(max_retries):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.settimeout(timeout)
+        try:
+            t1 = time.time()
+            sock.sendto(packet_constructor.construct_packet(name, type), (server, port))
+            recvB, recvA = sock.recvfrom(512)
+            t2 = time.time()
+            if recvB:
+                sock.close()
+                print("Response received after {} seconds ({} retries)".format(t2 - t1, retries))
+                (answer, aa) = packet_deconstructor.deconstruct_packet(recvB, packet_constructor.get_qname(name))
+                extract_records(answer, aa)
+                break
+        except socket.timeout:
+            print("ERROR: Request timed out.")
+  
+def extract_records(answer, aa):
+    if aa:
+        auth = 'auth'
+    else:
+        auth = 'nonauth'
+    print("*** Answer Section ({} records) ***".format(len(answer)))
+    for record in answer:
+        if record[0] == 1:
+            print("IP    {}    {}   {}".format(record[3], record[1], auth))
+        elif record[0] == 2:
+            print("NS    {}    {}   {}".format(record[3], record[1], auth))
+        elif record[0] == 5:
+            print("CNAME    {}    {}    {}".format(record[3], record[1], auth))
+        elif record[0] == 15:
+            print("MX    {}    {}   {}   {}".format(record[3][0], record[3][1][0], record[1], auth))
+
+def get_args():
     # Initialize parser
     parser = argparse.ArgumentParser(description="python dns_client.py [-t timeout] [-r max-retries] [-p port] ["
                                                  "-mx|-ns] @server name")
@@ -37,74 +89,7 @@ def main():
     parser.add_argument("name", type=str,
                         help="name (required) is the domain name to query for")
 
-    args = parser.parse_args()
-
-    # Store Values
-    timeout = args.timeout
-    max_retries = args.maxretries
-    port = args.port
-    if args.mx:
-        type = 'MX'
-    elif args.ns:
-        type = 'NS'
-    else:
-        type = 'A'
-    server = args.server
-    name = args.name.strip()
-
-    print("dns_client sending request for {}.".format(name))
-    print("Server: {}".format(server))
-    print("Request type: {}".format(type))
-    print("Timeout: {}".format(timeout))
-    print("Max Retries: {}".format(max_retries))
-    print("Port: {}".format(port))
-
-    # Create socket connection then try to send a packet and receive the reply
-    for retries in range(max_retries):
-        resp = False
-        recvB = ''
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.settimeout(timeout)
-
-        try:
-            t1 = time.time()
-            sock.sendto(packet_constructor.construct_packet(name, type), (server, port))
-            recvB, recvA = sock.recvfrom(512)
-            t2 = time.time()
-            if recvB:
-                resp = True
-                sock.close()
-                print("Response received after {} seconds ({} retries)".format(t2 - t1, retries))
-                break
-        except socket.timeout:
-            print("ERROR: Request timed out.")
-
-    (answer, aa) = packet_deconstructor.deconstruct_packet(recvB, packet_constructor.get_qname(name))
-
-    if aa:
-        auth = 'auth'
-    else:
-        auth = 'nonauth'
-
-    print("*** Answer Section ({} records) ***".format(len(answer)))
-    for entry in answer:
-        if entry[1] == 1:
-            print("IP    {}    {}   {}".format(entry[5], entry[3], auth))
-        elif entry[1] == 2:
-            print("NS    {}    {}   {}".format(entry[5], entry[3], auth))
-        elif entry[1] == 5:
-            print("CNAME    {}    {}    {}".format(entry[5], entry[3], auth))
-        elif entry[1] == 15:
-            pref = entry[5][1][0]
-            alias = ''
-            for i in entry[5][0]:
-                if i != entry[5][0][0]:
-                    alias += '.'
-                    alias += i
-                else:
-                    alias += i
-            print("MX    {}    {}   {}   {}".format(alias, pref, entry[3], auth))
-
+    return parser.parse_args()
 
 if __name__ == "__main__":
     main()
