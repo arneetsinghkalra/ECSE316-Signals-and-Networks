@@ -1,6 +1,13 @@
 import argparse
 
 def main():
+    args = get_args()
+    #Store values
+    mode = args.mode
+    image = args.image
+
+
+def get_args():
     # Initialize parser
     parser = argparse.ArgumentParser(description="python fft.py [-m mode] [-i image]")
 
@@ -12,12 +19,8 @@ def main():
                         help="image (optional): filename of the image we wish to take the DFT of. (Default: the file name of the image given to you for the assignment)"
                         )
 
-    args = parser.parse_args()
+    return parser.parse_args()
 
-    #Store values
-    mode = args.mode
-    image = args.image
-   
 
 if __name__ == "__main__":
     main()
