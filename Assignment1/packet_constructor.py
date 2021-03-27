@@ -19,10 +19,10 @@ def construct_packet(name, type):
 def get_qname(name):
     qname = ''
     slices = name.split('.')
-    for slice in slices:
-        qname += struct.pack('>B', len(slice))
-        for byte in bytes(slice):
-            qname += byte     
+    for i in slices:
+        qname += struct.pack('>B', len(i))
+        for j in bytes(i):
+            qname += j    
     return qname
 
 # Get the code corresponding to the query type to insert into packet
