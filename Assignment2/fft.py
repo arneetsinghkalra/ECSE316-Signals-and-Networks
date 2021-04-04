@@ -1,7 +1,9 @@
 import argparse
+import numpy as np
+import matplotlib as plot 
 
 def main():
-    args = get_args()
+    args = get_args() 
     #Store values
     mode = args.mode
     image = args.image
