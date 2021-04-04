@@ -1,12 +1,62 @@
 import argparse
 import numpy as np
-import matplotlib as plot 
+import matplotlib as plot
+import cv2
+import fouriertransform
 
 def main():
     args = get_args() 
     #Store values
     mode = args.mode
-    image = args.image
+    image_path = args.image
+
+    # Get Image, grayscale so it is a 2D Array
+    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+
+    # Resize image if need be
+    image = resize_image(image)
+
+    if mode == 1:
+        run_fft()
+    if mode == 2:
+        run_denoised_fft()
+    if mode == 3:
+        compress()
+    if mode == 4:
+        produce_plots()
+    
+
+
+
+def run_fft():
+    print("run fft")
+
+def run_denoised_fft():
+    print("run denoised fft")
+
+def compress():
+    print("compress")
+
+def produce_plots():
+    print("compress")
+
+
+
+# Additional Helper Methods:
+def resize_image(image):
+    width, height = image.shape
+
+    # If width is not a power of 2
+    if not (width and (not (width & (width - 1)))):
+        # Change value to next power of 2
+        width = int(2 ** np.ceil(np.log2(width)))
+
+    # If height is not a power of 2
+    if not (height and (not (height & (height - 1)))):
+        height = int(2 ** np.ceil(np.log2(height)))
+    
+    # Resize Image
+    return cv2.resize(image, (width,height))
 
 
 def get_args():
