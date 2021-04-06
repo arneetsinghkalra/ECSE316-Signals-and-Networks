@@ -30,7 +30,7 @@ def run_fft(image):
 
     # Plot images
     figure, axes = plt.subplots(1, 2)
-    axes[0].imshow(image, plt.gray)
+    axes[0].imshow(image, plt.cm.gray)
     axes[1].imshow(np.abs(fft_image), norm=colors.LogNorm())
     plt.show()
     
@@ -49,8 +49,8 @@ def denoise(image):
 
     # Plot images
     figure, axes = plt.subplots(1, 2)
-    axes[0].imshow(image, plt.gray)
-    axes[1].imshow(inverse_fft_image[:image.shape[0], :image.shape[1]], plt.gray)
+    axes[0].imshow(image, plt.cm.gray)
+    axes[1].imshow(inverse_fft_image[:image.shape[0], :image.shape[1]], plt.cm.gray)
     plt.show()
 
 def compress(image):
@@ -63,12 +63,12 @@ def compress(image):
 
     # Plot image compressions
     figure, axes = plt.subplots(2, 3)
-    axes[0, 0].imshow(np.real(compressed_images[0])[:image.shape[0], :image.shape[1]], plt.gray)
-    axes[0, 1].imshow(np.real(compressed_images[1])[:image.shape[0], :image.shape[1]], plt.gray)
-    axes[0, 2].imshow(np.real(compressed_images[2])[:image.shape[0], :image.shape[1]], plt.gray)
-    axes[1, 0].imshow(np.real(compressed_images[3])[:image.shape[0], :image.shape[1]], plt.gray)
-    axes[1, 1].imshow(np.real(compressed_images[4])[:image.shape[0], :image.shape[1]], plt.gray)
-    axes[1, 2].imshow(np.real(compressed_images[5])[:image.shape[0], :image.shape[1]], plt.gray)
+    axes[0, 0].imshow(np.real(compressed_images[0])[:image.shape[0], :image.shape[1]], plt.cm.gray)
+    axes[0, 1].imshow(np.real(compressed_images[1])[:image.shape[0], :image.shape[1]], plt.cm.gray)
+    axes[0, 2].imshow(np.real(compressed_images[2])[:image.shape[0], :image.shape[1]], plt.cm.gray)
+    axes[1, 0].imshow(np.real(compressed_images[3])[:image.shape[0], :image.shape[1]], plt.cm.gray)
+    axes[1, 1].imshow(np.real(compressed_images[4])[:image.shape[0], :image.shape[1]], plt.cm.gray)
+    axes[1, 2].imshow(np.real(compressed_images[5])[:image.shape[0], :image.shape[1]], plt.cm.gray)
     plt.show()
 
 def compress_image(image, fft_image, compressed):
