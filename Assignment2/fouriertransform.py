@@ -5,27 +5,27 @@ def dft(signal):
     N = signal.shape[0]   # Return number of rows in array
 
     # Instantiate array of zeros of length rows with complex type
-    dft = np.zeros(N, dtype=complex)
+    result = np.zeros(N, dtype=complex)
 
     for k in range(N):
         for n in range(N):
             # DFT formula
-            dft[k] += signal[n] * np.exp(-2j * np.pi * k * n / N)
+            result[k] += signal[n] * np.exp(-2j * np.pi * k * n / N)
 
-    return dft
+    return result
 
 def inverse_dft(X):
     X = np.asarray(X, dtype=complex)
     N = X.shape[0]
-    inverse_dft = np.zeros(N, dtype=complex)
+    inverse = np.zeros(N, dtype=complex)
 
     for n in range(N):
         for k in range(N):
-            inverse_dft[n] += X[k] * np.exp(2j * np.pi * k * n / N)
+            inverse[n] += X[k] * np.exp(2j * np.pi * k * n / N)
 
-        inverse_dft[n] = inverse_dft[n] / N
+        inverse[n] = inverse[n] / N
 
-    return inverse_dft
+    return inverse
 
 def dft_2d(signal):
     signal = np.asarray(signal, dtype=complex)
@@ -36,7 +36,7 @@ def dft_2d(signal):
 
     # Instantate arrays of 0s with same dimensions 
     row = np.zeros((N, M), dtype=complex) 
-    dft_2d = np.zeros((M, N), dtype=complex) 
+    result = np.zeros((M, N), dtype=complex) 
     
     # Compute the dft of input and store it in row
     for n in range(N):
@@ -46,9 +46,9 @@ def dft_2d(signal):
 
     # Compute dft of transposed array
     for m in range(M):
-        dft_2d[m] = dft(column[m])
+        result[m] = dft(column[m])
 
-    return dft_2d.transpose()
+    return result.transpose()
 
 def inverse_dft_2d(X):
     X = np.asarray(X, dtype=complex)
@@ -58,7 +58,7 @@ def inverse_dft_2d(X):
 
     # Instantate arrays of 0s with same dimensions 
     row = np.zeros((N, M), dtype=complex)
-    inverse_dft_2d = np.zeros((M, N), dtype=complex)
+    inverse = np.zeros((M, N), dtype=complex)
 
     for n in range(N):
         row[n] = inverse_dft(X[n])
@@ -67,9 +67,9 @@ def inverse_dft_2d(X):
 
     # Compute dft of transposed array
     for m in range(M):
-        inverse_dft_2d[m] = inverse_dft(column[m])
+        inverse[m] = inverse_dft(column[m])
 
-    return inverse_dft_2d.transpose()
+    return inverse.transpose()
 
 def fft(signal):
     threshold = 16

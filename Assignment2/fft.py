@@ -30,7 +30,7 @@ def run_fft(image):
 
     # Plot images
     figure, axes = plt.subplots(1, 2)
-    axes[0].imshow(image, plt.cm.gray)
+    axes[0].imshow(image, plt.gray)
     axes[1].imshow(np.abs(fft_image), norm=colors.LogNorm())
     plt.show()
     
@@ -49,8 +49,8 @@ def denoise(image):
 
     # Plot images
     figure, axes = plt.subplots(1, 2)
-    axes[0].imshow(image, plt.cm.gray)
-    axes[1].imshow(inverse_fft_image[:image.shape[0], :image.shape[1]], plt.cm.gray)
+    axes[0].imshow(image, plt.gray)
+    axes[1].imshow(inverse_fft_image[:image.shape[0], :image.shape[1]], plt.gray)
     plt.show()
 
 def compress(image):
@@ -63,12 +63,12 @@ def compress(image):
 
     # Plot image compressions
     figure, axes = plt.subplots(2, 3)
-    axes[0, 0].imshow(np.real(compressed_images[0])[:image.shape[0], :image.shape[1]], plt.cm.gray)
-    axes[0, 1].imshow(np.real(compressed_images[1])[:image.shape[0], :image.shape[1]], plt.cm.gray)
-    axes[0, 2].imshow(np.real(compressed_images[2])[:image.shape[0], :image.shape[1]], plt.cm.gray)
-    axes[1, 0].imshow(np.real(compressed_images[3])[:image.shape[0], :image.shape[1]], plt.cm.gray)
-    axes[1, 1].imshow(np.real(compressed_images[4])[:image.shape[0], :image.shape[1]], plt.cm.gray)
-    axes[1, 2].imshow(np.real(compressed_images[5])[:image.shape[0], :image.shape[1]], plt.cm.gray)
+    axes[0, 0].imshow(np.real(compressed_images[0])[:image.shape[0], :image.shape[1]], plt.gray)
+    axes[0, 1].imshow(np.real(compressed_images[1])[:image.shape[0], :image.shape[1]], plt.gray)
+    axes[0, 2].imshow(np.real(compressed_images[2])[:image.shape[0], :image.shape[1]], plt.gray)
+    axes[1, 0].imshow(np.real(compressed_images[3])[:image.shape[0], :image.shape[1]], plt.gray)
+    axes[1, 1].imshow(np.real(compressed_images[4])[:image.shape[0], :image.shape[1]], plt.gray)
+    axes[1, 2].imshow(np.real(compressed_images[5])[:image.shape[0], :image.shape[1]], plt.gray)
     plt.show()
 
 def compress_image(image, fft_image, compressed):
@@ -97,9 +97,9 @@ def produce_plots():
         np.random.random((2 ** 5, 2 ** 5)),
         np.random.random((2 ** 6, 2 ** 6)),
         np.random.random((2 ** 7, 2 ** 7)),         # DFT Mean around 5.5s, var around 0.0119s
-        np.random.random((2 ** 8, 2 ** 8))          # DFT Mean around 42.838s, var around 1.19s
-        # np.random.random((2 ** 9, 2 ** 9)),       # DFT Mean around 372.367s, var around 5.299s (Super long)
-        # np.random.random((2** 10, 2** 10))        # (Going to take way too long to run)
+        np.random.random((2 ** 8, 2 ** 8)),         # DFT Mean around 42.838s, var around 1.19s
+        np.random.random((2 ** 9, 2 ** 9)),       # DFT Mean around 372.367s, var around 5.299s (Super long)
+        np.random.random((2** 10, 2** 10))        # (Going to take way too long to run)
     ]
     # Store results
     dimensions_array = []
@@ -149,19 +149,20 @@ def produce_plots():
         print("FFT Variance: ", np.var(fft_results))
         print("----------------------------------------\n")
 
-    # Plot Results
+        # Plot Results
     # Error is standard deviation * 2
     dft_errors = [math.sqrt(i) * 2 for i in dft_variance_array]
     fft_errors = [math.sqrt(i) * 2 for i in fft_variance_array]
 
-    plt.errorbar(dimensions_array, dft_mean_array, yerr = dft_errors, label='DFT')
-    plt.errorbar(dimensions_array, fft_mean_array, yerr = fft_errors, label='FFT')
+    plt.errorbar(dimensions_array, dft_mean_array, yerr = dft_errors,ecolor="red", label='DFT')
+    plt.errorbar(dimensions_array, fft_mean_array, color = 'green', yerr = fft_errors, ecolor="red", label='FFT')
     plt.title('Mean Time vs Problem Size')
     plt.xlabel('Problem Size', fontsize=14)
     plt.ylabel('Runtime (s)', fontsize=14)
     plt.legend(loc = 'upper left')
     plt.grid(True)
     plt.show()
+    
 
 def pad_image(image):
     width = int(pow(2, math.ceil(math.log2(image.shape[0]))))
